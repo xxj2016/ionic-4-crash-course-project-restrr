@@ -20,19 +20,21 @@ export class HomePage {
   overallProgress: any = 0;
   percent = 0;
   radius = 100;
+  hours: any = 1;
   minutes = 1;
   seconds: any = 10;
   timer: any = false;
   overallTimer: any = false;
-  fullTime: any = '00:01:30';
+  fullTime: any = '00:00:05';
 
 
   countDownTimer: any = false;
   timeLeft: any = {
+    h: '00',
     m: '00',
     s: '00'
   };
-  remainingTime = `${this.timeLeft.m}:${this.timeLeft.s}`;
+  remainingTime = `${this.timeLeft.h}:${this.timeLeft.m}:${this.timeLeft.s}`;
 
   constructor(private insomnia: Insomnia, private navigationBar: NavigationBar) {
 
@@ -61,11 +63,13 @@ export class HomePage {
     this.progress = 0;
 
     const timeSplit = this.fullTime.split(':');
+    this.hours = timeSplit[0];
     this.minutes = timeSplit[1];
     this.seconds = timeSplit[2];
 
-    const totalSeconds = Math.floor(this.minutes * 60) + parseInt(this.seconds, 10);
+    const totalSeconds = Math.floor(this.hours * 60 * 60) + Math.floor(this.minutes * 60) + parseInt(this.seconds, 10);
     let secondsLeft = totalSeconds;
+    console.log(secondsLeft);
 
     const forwardsTimer = () => {
       if (this.percent === this.radius) { clearInterval(this.timer); }
@@ -75,9 +79,10 @@ export class HomePage {
 
     const backwardsTimer = () => {
       if (secondsLeft >= 0) {
-        this.timeLeft.m = Math.floor(secondsLeft / 60);
-        this.timeLeft.s = secondsLeft - (60 * this.timeLeft.m);
-        this.remainingTime = `${this.pad(this.timeLeft.m, 2)}:${this.pad(this.timeLeft.s, 2)}`;
+        this.timeLeft.h = Math.floor(secondsLeft / 60 / 60);
+        this.timeLeft.m = Math.floor(secondsLeft / 60) - (60 * this.timeLeft.h);
+        this.timeLeft.s = secondsLeft - (60 * Math.floor(secondsLeft / 60));
+        this.remainingTime = `${this.pad(this.timeLeft.h, 2)}:${this.pad(this.timeLeft.m, 2)}:${this.pad(this.timeLeft.s, 2)}`;
         secondsLeft--;
       }
     };
@@ -106,21 +111,32 @@ export class HomePage {
       s: '00'
     };
     this.timeLeft = {
+      h: '00',
       m: '00',
       s: '00'
     };
-    this.remainingTime = `${this.pad(this.timeLeft.m, 2)}:${this.pad(this.timeLeft.s, 2)}`;
+    this.remainingTime = `${this.pad(this.timeLeft.h, 2)}:${this.pad(this.timeLeft.m, 2)}:${this.pad(this.timeLeft.s, 2)}`;
     this.insomnia.allowSleepAgain();
   }
 
   progressTimer() {
     const countDownDate = new Date();
+    const timeSplit = this.fullTime.split(':');
+    this.hours = timeSplit[0];
+    this.minutes = timeSplit[1];
+    this.seconds = timeSplit[2];
+    const totalSeconds = Math.floor(this.hours * 60 * 60) + Math.floor(this.minutes * 60) + parseInt(this.seconds, 10);
+    // const totalSeconds = Math.floor(this.minutes * 60) + parseInt(this.seconds, 10);
+    console.log(Math.floor(this.minutes * 60));
+    console.log(parseInt(this.seconds, 10));
+    console.log(totalSeconds);
 
     this.overallTimer = setInterval(() => {
       const now = new Date().getTime();
 
       // Find the distance between now an the count down date
       const distance = now - countDownDate.getTime();
+      console.log('distance', distance);
 
       // Time calculations for hours, minutes and seconds
 
@@ -132,7 +148,12 @@ export class HomePage {
       this.elapsed.m = this.pad(this.elapsed.m, 2);
       this.elapsed.s = this.pad(this.elapsed.s, 2);
 
-
+      console.log(distance / 1000);
+      console.log(totalSeconds);
+      if (Math.floor(distance / 1000) === totalSeconds) {
+        console.log('stop');
+        clearInterval(this.overallTimer);
+      }
 
     }, 1000);
   }

@@ -2,11 +2,12 @@
 
     <ion-item class="top" color="dark">
         <ion-label>Rest Duration</ion-label>
-        <ion-datetime #myPicker display-format="mm:ss" placeholder="Pick it" [(ngModel)]="fullTime" (ionChange)="updateMyDate(myPicker.value)"></ion-datetime>
+        <ion-datetime #myPicker display-format="HH:mm:ss" placeholder="Pick it" [(ngModel)]="fullTime" (ionChange)="updateMyDate(myPicker.value)"></ion-datetime>
     </ion-item>
     
     <div class="box">
-        <circle-progress (click)="startTimer()"
+        <!-- <circle-progress (click)="startTimer()" -->
+        <circle-progress
             [percent]="percent"
             [maxPercent]="100"
             [radius]="radius"
